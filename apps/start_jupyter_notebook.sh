@@ -3,6 +3,7 @@ JUPYTER_KERNEL_DIR="/usr/local/share/jupyter/kernels/ECS IPython Kernel"
 JUPYTER_KERNEL_FILE=$JUPYTER_KERNEL_DIR"/kernel.json"
 
 function start_jupyter_notebook() {
+    SSH_PORT=22
     # parse the ecs instance ip
     SSH_HOST=`jq .task_private_ip.value $ECS_INSTANCE_FILE`
     if [ $? -ne 0 ]; then
@@ -13,7 +14,7 @@ function start_jupyter_notebook() {
     SSH_HOST=`echo $SSH_HOST | sed 's/"//g'`
 
     # netcat the ssh host and port 
-    nc -w 5 $SSH_HOST 22
+    nc -w 5 $SSH_HOST $SSH_PORT
     if [ $? -ne 0 ]; then
         echo "Can't connect ${SSH_HOST}"
         return

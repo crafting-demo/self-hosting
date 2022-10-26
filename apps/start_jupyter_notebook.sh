@@ -1,29 +1,21 @@
-SSH_PORT=22
 ECS_INSTANCE_FILE="/run/sandbox/fs/resources/aws-ecs-service/output"
-KERNEL_DIR="/usr/local/share/jupyter/kernels/ECS IPython Kernel"
-KERNEL_FILE=$KERNEL_DIR"/kernel.json"
+JUPYTER_KERNEL_DIR="/usr/local/share/jupyter/kernels/ECS IPython Kernel"
+JUPYTER_KERNEL_FILE=$JUPYTER_KERNEL_DIR"/kernel.json"
 
 function start_jupyter_notebook() {
     # parse the ecs instance ip
     SSH_HOST=`jq .task_private_ip.value $ECS_INSTANCE_FILE`
     if [ $? -ne 0 ]; then
         echo "Can't parse ecs instance ip"
+        sleep 5
         return
     fi
-
     SSH_HOST=`echo $SSH_HOST | sed 's/"//g'`
-    echo $SSH_HOST
 
     # netcat the ssh host and port 
-    nc -w 5 $SSH_HOST $SSH_PORT
+    nc -w 5 $SSH_HOST 22
     if [ $? -ne 0 ]; then
         echo "Can't connect ${SSH_HOST}"
-        return
-    fi
-
-    sudo mkdir -p "$KERNEL_DIR"
-    if [ $? -ne 0 ]; then
-        echo "Can't mkdir ${KERNERL_DIR}"
         return
     fi
 
@@ -41,24 +33,22 @@ function start_jupyter_notebook() {
             \"{connection_file}\"
         ],
         \"display_name\": \"ECS IPython Kernel\"
-    }" | sudo tee "$KERNEL_FILE"
+    }" | sudo tee "$JUPYTER_KERNEL_FILE"
 
     jupyter notebook --allow-root --no-browser --ip 0.0.0.0 &
-
-    return
-}
-
-RETVAL=0
-for((i = 1; i <= 10; i++))
-do
-    start_jupyter_notebook
-    if [ $? -ne 0 ]; then
-        sleep 1
-        continue
-    fi
-
     echo "Jupyter notebook is started"
     exit 0
+}
+
+sudo mkdir -p "$JUPYTER_KERNEL_DIR"
+if [ $? -ne 0 ]; then
+    echo "Can't mkdir ${JUPYTER_KERNEL_DIR}"
+    return
+fi
+
+for((i = 1; i <= 60; i++))
+do
+    start_jupyter_notebook
 done
 
 echo "Failed to start the jupyter-notebook"

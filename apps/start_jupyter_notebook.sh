@@ -12,6 +12,7 @@ function start_jupyter_notebook() {
         return
     fi
     SSH_HOST=`echo $SSH_HOST | sed 's/"//g'`
+    echo $SSH_HOST":"$SSH_PORT
 
     # netcat the ssh host and port 
     nc -w 5 $SSH_HOST $SSH_PORT

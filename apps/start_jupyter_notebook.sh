@@ -6,7 +6,7 @@ function start_jupyter_notebook() {
     SSH_PORT=22
     # parse the ecs instance ip
     SSH_HOST=`jq .task_private_ip.value $ECS_INSTANCE_FILE`
-    if [ $? -ne 0 ]; then
+    if [ $? -ne 0 ] || [ -z "$SSH_HOST" ]; then
         echo "Can't parse ecs instance ip"
         sleep 5
         return

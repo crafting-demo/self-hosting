@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ECS_INSTANCE_STATE="/run/sandbox/fs/resources/aws-ecs-service/test"
+ECS_INSTANCE_STATE="/run/sandbox/fs/resources/aws-ecs-service/state"
 JUPYTER_KERNEL_DIR="/usr/local/share/jupyter/kernels/ECS IPython Kernel"
 JUPYTER_KERNEL_FILE=$JUPYTER_KERNEL_DIR"/kernel.json"
 IP_PORT=22

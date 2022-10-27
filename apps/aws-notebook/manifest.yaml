@@ -6,4 +6,4 @@ daemons:
   jupyter-notebook:
     run:
       cmd: |
-        .apps/aws-notebook/start_jupyter_notebook.sh
+        ./apps/aws-notebook/start_jupyter_notebook.sh

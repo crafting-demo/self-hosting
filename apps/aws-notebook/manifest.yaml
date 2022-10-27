@@ -6,4 +6,4 @@ daemons:
   jupyter-notebook:
     run:
       cmd: |
-        bash -c "/home/owner/dev/apps/start_jupyter_notebook.sh"
+        ./apps/start_jupyter_notebook.sh

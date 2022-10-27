@@ -11,7 +11,7 @@ function fatal() {
 
 if [[ -z "$1" ]];then
   echo "USAGE: sudo ./build_bash.sh SNAPSHOT_NAME"
-  exit 0
+  exit 2
 fi
 
 apt-get update

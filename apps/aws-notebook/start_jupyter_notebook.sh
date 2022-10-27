@@ -21,7 +21,7 @@ function ecs_ip() {
 
 function wait_for_ecs_ip() {
     local ip_addr
-    for ((i=0; i<5; i=i+1)); do
+    for ((i=0; i<600; i=i+1)); do
         ip_addr="$(ecs_ip)"
         [[ -z "$ip_addr" ]] || break
         sleep 1

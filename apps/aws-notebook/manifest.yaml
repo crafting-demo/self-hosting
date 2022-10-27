@@ -6,4 +6,5 @@ daemons:
   jupyter-notebook:
     run:
       cmd: |
-        ./apps/start_jupyter_notebook.sh
+        pwd
+        ./dev/apps/start_jupyter_notebook.sh

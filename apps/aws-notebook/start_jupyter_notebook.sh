@@ -12,7 +12,7 @@ function fatal() {
 
 function ecs_ip() {
     local ip_addr="$(jq -cMr .task_private_ip.value $ECS_INSTANCE_STATE 2>/dev/null || true)"
-    [[ -n "$ip_addr" ]] && echo "$ip_addr"
+    [[ "$ip_addr" == "null" ]] || echo "$ip_addr"
 }
 
 function wait_for_ecs_ip() {

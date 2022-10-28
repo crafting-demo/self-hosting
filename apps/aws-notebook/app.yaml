@@ -7,12 +7,12 @@ endpoints:
       routes:
         - backend:
             target: notebook
-            port: notebook-service
+            port: notebook
           path_prefix: /
 workspaces:
   - name: notebook
     ports:
-      - name: notebook-service
+      - name: notebook
         port: 8888
         protocol: HTTP/TCP
     checkouts:

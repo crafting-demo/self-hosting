@@ -2,23 +2,23 @@
 overview: |
   # Jupter Notebook
 endpoints:
-  - name: jupyter-notebook
+  - name: notebook
     http:
       routes:
         - backend:
-            target: jupyter-notebook
+            target: notebook
             port: notebook-service
           path_prefix: /
 workspaces:
-  - name: jupyter-notebook
+  - name: notebook
     ports:
       - name: notebook-service
         port: 8888
         protocol: HTTP/TCP
     checkouts:
-      - path: dev
+      - path: solutions
         repo:
-          git: git@github.com:crafting-demo/solutions.git
+          git: https://github.com/crafting-demo/solutions.git
         manifest:
           overlays:
             - file: apps/aws-notebook/manifest.yaml
@@ -46,17 +46,17 @@ resources:
         max_retries: 3
         timeout: 1800s
         use_workspace:
-          name: jupyter-notebook
+          name: notebook
           run:
-            dir: dev/apps/aws-notebook/tf
+            dir: solutions/apps/aws-notebook/tf
             cmd: ./on_create.sh
       on_delete:
         max_retries: 3
         timeout: 1800s
         use_workspace:
-          name: jupyter-notebook
+          name: notebook
           run:
-            dir: dev/apps/aws-notebook/tf
+            dir: solutions/apps/aws-notebook/tf
             cmd: >
               terraform apply -destroy -auto-approve
               -var="ecs_cluster_name=${ECS_CLUSTER_NAME}"  

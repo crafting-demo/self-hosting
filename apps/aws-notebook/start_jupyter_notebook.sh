@@ -3,7 +3,7 @@
 ECS_INSTANCE_STATE="/run/sandbox/fs/resources/aws-ecs-service/state"
 JUPYTER_KERNEL_DIR="/usr/local/share/jupyter/kernels/ECS IPython Kernel"
 JUPYTER_KERNEL_FILE=$JUPYTER_KERNEL_DIR"/kernel.json"
-IP_PORT=22
+SSH_PORT=22
 
 function fatal() {
   echo "$@" >&2
@@ -11,12 +11,8 @@ function fatal() {
 }
 
 function ecs_ip() {
-    local ip_addr
-    ip_addr=`jq .task_private_ip.value $ECS_INSTANCE_STATE`
-    if [ $? -eq 0 ] && [ ! -z "$ip_addr" ]; then
-        ip_addr=`echo $ip_addr | sed 's/"//g'`
-        echo "$ip_addr"
-    fi
+    local ip_addr="$(jq -cMr .task_private_ip.value $ECS_INSTANCE_STATE 2>/dev/null || true)"
+    [[ -n "$ip_addr" ]] && echo "$ip_addr"
 }
 
 function wait_for_ecs_ip() {
@@ -29,13 +25,12 @@ function wait_for_ecs_ip() {
     echo "$ip_addr"
 }
 
+SSH_HOST="$(wait_for_ecs_ip)"
+[[ -n "$SSH_HOST" ]] || fatal "Wait for ECS IP timed out."
+
+nc -vz -w 5 $SSH_HOST $SSH_PORT || fatal "Can't connect ${SSH_HOST}"
+
 sudo mkdir -p "$JUPYTER_KERNEL_DIR"
-
-IP_ADDR="$(wait_for_ecs_ip)"
-[ ! -z "$IP_ADDR" ] || fatal "Wait for ECS IP timed out."
-
-nc -w 5 $IP_ADDR $IP_PORT
-[ $? -eq 0 ] || fatal "Can't connect ${IP_ADDR}"
 
 cat <<EOF | sudo tee "$JUPYTER_KERNEL_FILE"
 {
@@ -46,7 +41,7 @@ cat <<EOF | sudo tee "$JUPYTER_KERNEL_FILE"
         "--interface",
         "ssh",
         "--host",
-        "root@$IP_ADDR:$IP_PORT -i ~/.ssh/aws-notebook_rsa",
+        "root@$SSH_HOST:$SSH_PORT -i ~/.ssh/aws-notebook_rsa",
         "--kernel_cmd",
         "ipython kernel -f {host_connection_file}",
         "{connection_file}"
@@ -55,4 +50,4 @@ cat <<EOF | sudo tee "$JUPYTER_KERNEL_FILE"
 }
 EOF
 
-exec jupyter notebook --allow-root --no-browser --ip="*" --NotebookApp.token='' --NotebookApp.password=''
+exec jupyter notebook --no-browser --ip="*" --NotebookApp.token='' --NotebookApp.password=''

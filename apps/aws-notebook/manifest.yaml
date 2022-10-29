@@ -3,4 +3,7 @@ daemons:
     run:
       cmd: |
         sudo openvpn --config $OPENVPN_CONFIG_FILE
-
+  jupyter-notebook:
+    run:
+      cmd: |
+        ./apps/aws-notebook/start_jupyter_notebook.sh

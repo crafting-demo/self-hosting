@@ -1,1 +1,26 @@
-{}
+hooks:
+  build:
+    cmd: |
+      mkdir -p $HOME/.local/bin
+      curl -sSLf https://github.com/tsl0922/ttyd/releases/download/1.7.2/ttyd.x86_64 -o $HOME/.local/bin/ttyd
+      chmod a+rx $HOME/.local/bin/ttyd
+
+daemons:
+  webide:
+    run:
+      cmd: >
+        socat
+        TCP-LISTEN:8081,fork,reuseaddr
+        TCP-CONNECT:$(terraform output -raw private_ip):$(terraform output -raw vscode_server_port)
+      dir: apps/aws-linuxvm/tf
+
+  ttyd:
+    run:
+      cmd: >
+        $HOME/.local/bin/ttyd
+        -p 8080 
+        ssh
+        -o StrictHostKeyChecking=no
+        -i $SSH_KEYPAIR_FILE 
+        $(terraform output -raw user)@$(terraform output -raw private_ip)
+      dir: apps/aws-linuxvm/tf

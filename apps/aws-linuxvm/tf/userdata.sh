@@ -1,5 +1,14 @@
 #!/bin/bash
 set -x
+
+# Inject SSH authorized keys.
+mkdir -p "${home_dir}/.ssh"
+cat <<EOF >>"${home_dir}/.ssh/authorized_keys"
+${authorized_keys}
+EOF
+chown -R ${user}:${group} "${home_dir}/.ssh"
+
+# Install and start VSCode server
 mkdir -p /opt/sandboxd/vscode
 curl -sSLf '${vscode_server_pkg_url}' | tar -C /opt/sandboxd/vscode -zx
 cat <<EOF >/etc/systemd/system/vscode-server.service

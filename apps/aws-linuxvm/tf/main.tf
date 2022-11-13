@@ -35,5 +35,6 @@ resource "aws_instance" "vm" {
     user                  = var.user
     group                 = var.group
     home_dir              = var.home_dir
+    authorized_keys       = data.external.env.result.authorized_keys
   })
 }

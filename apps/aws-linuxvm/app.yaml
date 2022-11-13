@@ -30,8 +30,34 @@ customizations:
       - '100'
       - '200'
       - '500'
+endpoints:
+- name: term
+  http:
+    auth_proxy:
+      disabled: true
+    routes:
+    - path_prefix: /
+      backend:
+        target: tf
+        port: term
+- name: ide
+  http:
+    auth_proxy:
+      disabled: true
+    routes:
+    - path_prefix: /
+      backend:
+        target: tf
+        port: ide
 workspaces:
 - name: tf
+  ports:
+  - name: term
+    port: 8080
+    protocol: HTTP/TCP
+  - name: ide
+    port: 8081
+    protocol: HTTP/TCP
   checkouts:
   - path: demo
     repo:
@@ -39,8 +65,12 @@ workspaces:
     manifest:
       overlays:
       - file: apps/aws-linuxvm/manifest.yaml
+  packages:
+  - name: golang
+    version: ~1
   env:
   - AWS_CONFIG_FILE=/run/sandbox/fs/secrets/shared/aws-config
+  - SSH_KEYPAIR_FILE=/run/sandbox/fs/secrets/shared/ec2-keypair-shared.pem
   base_snapshot: shared/base-dev-r1
   home_snapshot: shared/home-dev-r1
 resources:
@@ -50,9 +80,9 @@ resources:
     EC2 Linux VM:
     
     To Access:
-    - SSH: `{{state.user.value}}@{{state.private_ip.value}}`
     - [WebIDE](http://{{state.private_ip.value}}:{{state.vscode_server_port.value}})
-    - [VSCode](vscode://vscode-remote/{{state.private_ip.value}}{{state.home_dir}})
+    - [VSCode](vscode://vscode-remote/{{state.private_ip.value}}{{state.home_dir.value}})
+    - SSH: `{{state.user.value}}@{{state.private_ip.value}}`
     - PrivateIP: {{state.private_ip.value}}
 
   handlers:

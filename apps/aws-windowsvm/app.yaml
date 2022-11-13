@@ -36,8 +36,8 @@ workspaces:
       - file: apps/aws-windowsvm/manifest.yaml
   env:
   - AWS_CONFIG_FILE=/run/sandbox/fs/secrets/shared/aws-config
-  base_snapshot: base/dev/1
-  home_snapshot: home/dev/1
+  base_snapshot: shared/base-dev-r1
+  home_snapshot: shared/home-dev-r1
 dependencies:
 - name: guacamoledb
   service_type: mysql
@@ -45,21 +45,21 @@ dependencies:
     database: guacamole
     username: guacamole
     password: guacamole
-  snapshot: mysql/guacamole/base/1
+  snapshot: shared/guacamoledb-r1
 resources:
 - name: windows
   brief: EC2 Windows VM
   details: |
     EC2 Windows VM:
     
-    - Hostname: {{data.public_dns.value}}
-    - PublicIP: {{data.public_ip.value}}
+    - Hostname: {{state.public_dns.value}}
+    - PublicIP: {{state.public_ip.value}}
 
     Access via [RDP]({{endpoints.rdp.url}}), or use the following config `{{sandbox.name}}.rdp`:
 
     ```
     auto connect:i:1
-    full address:s:{{data.public_dns.value}}
+    full address:s:{{state.public_dns.value}}
     username:s:Administrator
     ```
 

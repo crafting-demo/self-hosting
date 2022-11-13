@@ -19,10 +19,6 @@ provider "aws" {
   }
 }
 
-data "aws_region" "current" {}
-
-data "aws_caller_identity" "current" {}
-
 resource "aws_instance" "vm" {
   launch_template {
     name = var.launch_template_name
@@ -32,4 +28,12 @@ resource "aws_instance" "vm" {
   root_block_device {
     volume_size = var.root_volume_size
   }
+
+  user_data = templatefile("${path.module}/userdata.sh", {
+    vscode_server_pkg_url = var.vscode_server_pkg_url
+    vscode_server_port    = var.vscode_server_port
+    user                  = var.user
+    group                 = var.group
+    home_dir              = var.home_dir
+  })
 }

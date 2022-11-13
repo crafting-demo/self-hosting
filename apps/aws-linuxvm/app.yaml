@@ -5,6 +5,31 @@ overview: |
   This sandbox is created with an EC2 Linux VM as a development environment.
   Click the resource `linux` to see the detailed instructions.
 
+env:
+- EC2_INSTANCE_TYPE=t2.micro
+- EC2_DISK_GB=10
+customizations:
+- env:
+    name: EC2_INSTANCE_TYPE
+    display_name: Instance Type
+    description: Specify the instance_type of the Linux VM.
+    choice:
+      options:
+      - t2.micro
+      - t3.large
+      - m6i.2xlarge
+- env:
+    name: EC2_DISK_GB
+    display_name: Disk Size in GB
+    description: Specify the disk size in GB of the Linux VM.
+    validators:
+    - regexp: '^\d+$'
+    choice:
+      editable: true
+      options:
+      - '100'
+      - '200'
+      - '500'
 workspaces:
 - name: tf
   checkouts:
@@ -16,36 +41,39 @@ workspaces:
       - file: apps/aws-linuxvm/manifest.yaml
   env:
   - AWS_CONFIG_FILE=/run/sandbox/fs/secrets/shared/aws-config
-  base_snapshot: base/dev/1
-  home_snapshot: home/dev/1
-# resources:
-# - name: linux
-#   brief: EC2 Linux VM
-#   details: |
-#     EC2 Linux VM:
+  base_snapshot: shared/base-dev-r1
+  home_snapshot: shared/home-dev-r1
+resources:
+- name: linux
+  brief: EC2 Linux VM
+  details: |
+    EC2 Linux VM:
     
-#     - Hostname: {{data.public_dns.value}}
-#     - PublicIP: {{data.public_ip.value}}
+    To Access:
+    - SSH: `{{state.user.value}}@{{state.private_ip.value}}`
+    - [WebIDE](http://{{state.private_ip.value}}:{{state.vscode_server_port.value}})
+    - [VSCode](vscode://vscode-remote/{{state.private_ip.value}}{{state.home_dir}})
+    - PrivateIP: {{state.private_ip.value}}
 
-#   handlers:
-#     on_create:
-#       max_retries: 3
-#       timeout: 1800s
-#       save_state: true
-#       use_workspace:
-#         name: tf
-#         run:
-#           dir: demo/apps/aws-linuxvm/tf
-#           cmd: |
-#             set -ex
-#             terraform init >&2
-#             terraform apply -auto-approve >&2
-#             terraform output -json
-#     on_delete:
-#       max_retries: 3
-#       timeout: 1800s
-#       use_workspace:
-#         name: dev
-#         run:
-#           dir: demo/apps/aws-linuxvm/tf
-#           cmd: terraform destroy -auto-approve >&2
+  handlers:
+    on_create:
+      max_retries: 3
+      timeout: 1800s
+      save_state: true
+      use_workspace:
+        name: tf
+        run:
+          dir: demo/apps/aws-linuxvm/tf
+          cmd: |
+            set -ex
+            terraform init >&2
+            terraform apply -auto-approve -var instance_type=$EC2_INSTANCE_TYPE -var root_volume_size=$EC2_DISK_GB >&2
+            terraform output -json
+    on_delete:
+      max_retries: 3
+      timeout: 1800s
+      use_workspace:
+        name: dev
+        run:
+          dir: demo/apps/aws-linuxvm/tf
+          cmd: terraform destroy -auto-approve >&2

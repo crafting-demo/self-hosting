@@ -1,0 +1,51 @@
+---
+overview: |
+  # AWS Resources in Sandbox
+  
+  This sandbox is created with an EC2 Linux VM as a development environment.
+  Click the resource `linux` to see the detailed instructions.
+
+workspaces:
+- name: tf
+  checkouts:
+  - path: demo
+    repo:
+      git: https://github.com/crafting-demo/solutions
+    manifest:
+      overlays:
+      - file: apps/aws-linuxvm/manifest.yaml
+  env:
+  - AWS_CONFIG_FILE=/run/sandbox/fs/secrets/shared/aws-config
+  base_snapshot: base/dev/1
+  home_snapshot: home/dev/1
+# resources:
+# - name: linux
+#   brief: EC2 Linux VM
+#   details: |
+#     EC2 Linux VM:
+    
+#     - Hostname: {{data.public_dns.value}}
+#     - PublicIP: {{data.public_ip.value}}
+
+#   handlers:
+#     on_create:
+#       max_retries: 3
+#       timeout: 1800s
+#       save_state: true
+#       use_workspace:
+#         name: tf
+#         run:
+#           dir: demo/apps/aws-linuxvm/tf
+#           cmd: |
+#             set -ex
+#             terraform init >&2
+#             terraform apply -auto-approve >&2
+#             terraform output -json
+#     on_delete:
+#       max_retries: 3
+#       timeout: 1800s
+#       use_workspace:
+#         name: dev
+#         run:
+#           dir: demo/apps/aws-linuxvm/tf
+#           cmd: terraform destroy -auto-approve >&2

@@ -73,7 +73,7 @@ resources:
       max_retries: 3
       timeout: 1800s
       use_workspace:
-        name: dev
+        name: tf
         run:
           dir: demo/apps/aws-linuxvm/tf
           cmd: terraform destroy -auto-approve >&2

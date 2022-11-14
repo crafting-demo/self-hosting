@@ -10,14 +10,15 @@ daemons:
     run:
       cmd: |
         ./wait.sh
+        set -x
         socat \
           TCP-LISTEN:8081,fork,reuseaddr \
-          TCP-CONNECT:$(terraform -chdir=tf output -raw private_ip):$(terraform output -chdir=tf -raw vscode_server_port)
+          TCP-CONNECT:$(terraform -chdir=tf output -raw private_ip):$(terraform -chdir=tf output -raw vscode_server_port)
       dir: apps/aws-linuxvm
 
   ttyd:
     run:
       cmd: |
         ./wait.sh
-        ./term.sh
+        $HOME/.local/bin/ttyd -p 8080 ./term.sh
       dir: apps/aws-linuxvm

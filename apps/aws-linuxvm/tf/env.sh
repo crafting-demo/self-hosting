@@ -12,6 +12,7 @@ cat <<EOF
 {
     "sandbox_id": "$SANDBOX_ID",
     "sandbox_name": "$SANDBOX_NAME",
-    "authorized_keys": "$AUTHORIZED_KEYS"
+    "authorized_keys": "$AUTHORIZED_KEYS",
+    "ssh_keypair_file": "$SSH_KEYPAIR_FILE"
 }
 EOF

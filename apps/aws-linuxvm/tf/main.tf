@@ -21,10 +21,9 @@ provider "aws" {
 
 resource "aws_instance" "vm" {
   launch_template {
-    name = var.launch_template_name
+    name = var.launch_template
   }
   instance_type = var.instance_type == "" ? null : var.instance_type
-  key_name      = var.key_name == "" ? null : var.key_name
   root_block_device {
     volume_size = var.root_volume_size
   }
@@ -37,4 +36,19 @@ resource "aws_instance" "vm" {
     home_dir              = var.home_dir
     authorized_keys       = data.external.env.result.authorized_keys
   })
+}
+
+resource "null_resource" "checkout" {
+  connection {
+    type        = "ssh"
+    user        = var.user
+    host        = resource.aws_instance.vm.private_ip
+    private_key = file(data.external.env.result.ssh_keypair_file)
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "git clone ${var.source_repo} $HOME/src"
+    ]
+  }
 }

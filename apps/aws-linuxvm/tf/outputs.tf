@@ -1,3 +1,15 @@
+output "instance_type" {
+  value = var.instance_type
+}
+
+output "root_volume_size" {
+  value = var.root_volume_size
+}
+
+output "launch_template" {
+  value = var.launch_template
+}
+
 output "private_ip" {
   value = aws_instance.vm.private_ip
 }

@@ -3,7 +3,13 @@ overview: |
   # AWS Resources in Sandbox
   
   This sandbox is created with an EC2 Linux VM as a development environment.
-  Click the resource `linux` to see the detailed instructions.
+
+  The VM can be accessed on `{{resources.linux.state.private_ip.value}}`:
+  - [WebTerminal]({{endpoints.term.url}}), [WebIDE]({{endpoints.ide.url}})
+  - [VSCode](vscode://vscode-remote/ssh-remote%2B{{resources.linux.state.private_ip.value}}{{resources.linux.state.home_dir.value}}/src)
+  - SSH: `ssh {{resources.linux.state.user.value}}@{{resources.linux.state.private_ip.value}}`
+
+  Click the resource `linux` to see more details.
 
 env:
 - EC2_INSTANCE_TYPE=t2.micro
@@ -49,6 +55,7 @@ endpoints:
       backend:
         target: tf
         port: ide
+    path: '/?folder=/home/ubuntu/src'
 workspaces:
 - name: tf
   ports:
@@ -87,10 +94,15 @@ resources:
   details: |
     EC2 Linux VM:
     
+    |Launch Template|Instance Type|Disk Size|
+    |---------------|-------------|---------|
+    |{{state.launch_template}}|{{state.instance_type}}|{{state.root_volume_size}}G|
+
     To Access:
-    - [WebIDE](http://{{state.private_ip.value}}:{{state.vscode_server_port.value}})
-    - [VSCode](vscode://vscode-remote/{{state.private_ip.value}}{{state.home_dir.value}})
-    - SSH: `{{state.user.value}}@{{state.private_ip.value}}`
+    - [Terminal]({{endpoints.term.url}})
+    - [WebIDE](http://{{state.private_ip.value}}:{{state.vscode_server_port.value}}/?folder={{state.home_dir.value}}/src)
+    - [VSCode](vscode://vscode-remote/ssh-remote%2B{{state.private_ip.value}}{{state.home_dir.value}})/src
+    - SSH: `ssh {{state.user.value}}@{{state.private_ip.value}}`
     - PrivateIP: {{state.private_ip.value}}
 
   handlers:

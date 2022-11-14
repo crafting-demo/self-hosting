@@ -1,4 +1,4 @@
-variable "launch_template_name" {
+variable "launch_template" {
   default = "micro-linux"
 }
 
@@ -12,10 +12,6 @@ variable "root_volume_size" {
   default = 10
 }
 
-variable "key_name" {
-  default = ""
-}
-
 # The download URL of VSCode server package.
 variable "vscode_server_pkg_url" {
   default = "https://cloud-sandboxes.storage.googleapis.com/vscode/latest/vscode-server.tar.gz"
@@ -24,6 +20,11 @@ variable "vscode_server_pkg_url" {
 # The listening port of the VSCode server.
 variable "vscode_server_port" {
   default = 8008
+}
+
+# The URL to the source repo for checking out code.
+variable "source_repo" {
+  default = "https://github.com/bazelbuild/bazel"
 }
 
 # TODO: change user/group and home_dir based on the AMI being used.

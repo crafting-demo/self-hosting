@@ -9,17 +9,15 @@ daemons:
   webide:
     run:
       cmd: |
-        while [[ -z "$(terraform output -raw private_ip 2>/dev/null || true)" ]]; do sleep 1; done
+        ./wait.sh
         socat \
           TCP-LISTEN:8081,fork,reuseaddr \
-          TCP-CONNECT:$(terraform output -raw private_ip):$(terraform output -raw vscode_server_port)
-      dir: apps/aws-linuxvm/tf
+          TCP-CONNECT:$(terraform -chdir=tf output -raw private_ip):$(terraform output -chdir=tf -raw vscode_server_port)
+      dir: apps/aws-linuxvm
 
   ttyd:
     run:
       cmd: |
-        while [[ -z "$(terraform output -raw private_ip 2>/dev/null || true)" ]]; do sleep 1; done
-        $HOME/.local/bin/ttyd -p 8080 \
-          ssh -o StrictHostKeyChecking=no -i $SSH_KEYPAIR_FILE \
-          $(terraform output -raw user)@$(terraform output -raw private_ip)
-      dir: apps/aws-linuxvm/tf
+        ./wait.sh
+        ./term.sh
+      dir: apps/aws-linuxvm

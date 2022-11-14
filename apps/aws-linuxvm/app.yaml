@@ -76,10 +76,7 @@ workspaces:
   probes:
     readiness:
     - name: ssh
-      command: >
-        ssh -o StrictHostKeyChecking=no -i $SSH_KEYPAIR_FILE
-        $(terraform -chdir=/home/owner/demo/apps/aws-linuxvm/tf output -raw user)@$(terraform -chdir=/home/owner/demo/apps/aws-linuxvm/tf output -raw private_ip)
-        true
+      command: /home/owner/demo/apps/aws-linuxvm/term.sh true
     - name: ide
       http_get:
         port: 8081

@@ -8,19 +8,18 @@ hooks:
 daemons:
   webide:
     run:
-      cmd: >
-        socat
-        TCP-LISTEN:8081,fork,reuseaddr
-        TCP-CONNECT:$(terraform output -raw private_ip):$(terraform output -raw vscode_server_port)
+      cmd: |
+        while [[ -z "$(terraform output -raw private_ip 2>/dev/null || true)" ]]; do sleep 1; done
+        socat \
+          TCP-LISTEN:8081,fork,reuseaddr \
+          TCP-CONNECT:$(terraform output -raw private_ip):$(terraform output -raw vscode_server_port)
       dir: apps/aws-linuxvm/tf
 
   ttyd:
     run:
-      cmd: >
-        $HOME/.local/bin/ttyd
-        -p 8080 
-        ssh
-        -o StrictHostKeyChecking=no
-        -i $SSH_KEYPAIR_FILE 
-        $(terraform output -raw user)@$(terraform output -raw private_ip)
+      cmd: |
+        while [[ -z "$(terraform output -raw private_ip 2>/dev/null || true)" ]]; do sleep 1; done
+        $HOME/.local/bin/ttyd -p 8080 \
+          ssh -o StrictHostKeyChecking=no -i $SSH_KEYPAIR_FILE \
+          $(terraform output -raw user)@$(terraform output -raw private_ip)
       dir: apps/aws-linuxvm/tf

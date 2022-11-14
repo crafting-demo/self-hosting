@@ -73,6 +73,17 @@ workspaces:
   - SSH_KEYPAIR_FILE=/run/sandbox/fs/secrets/shared/ec2-keypair-shared.pem
   base_snapshot: shared/base-dev-r1
   home_snapshot: shared/home-dev-r1
+  probes:
+    readiness:
+    - name: ssh
+      command: >
+        ssh -o StrictHostKeyChecking=no -i $SSH_KEYPAIR_FILE
+        $(terraform -chdir=/home/owner/demo/apps/aws-linuxvm/tf output -raw user)@$(terraform -chdir=/home/owner/demo/apps/aws-linuxvm/tf output -raw private_ip)
+        true
+    - name: ide
+      http_get:
+        port: 8081
+        path: /
 resources:
 - name: linux
   brief: EC2 Linux VM

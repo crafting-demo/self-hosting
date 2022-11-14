@@ -40,10 +40,9 @@ resource "aws_instance" "vm" {
 
 resource "null_resource" "checkout" {
   connection {
-    type        = "ssh"
-    user        = var.user
-    host        = resource.aws_instance.vm.private_ip
-    private_key = file(data.external.env.result.ssh_keypair_file)
+    type = "ssh"
+    user = var.user
+    host = resource.aws_instance.vm.private_ip
   }
 
   provisioner "remote-exec" {

@@ -77,7 +77,6 @@ workspaces:
     version: ~1
   env:
   - AWS_CONFIG_FILE=/run/sandbox/fs/secrets/shared/aws-config
-  - SSH_KEYPAIR_FILE=/run/sandbox/fs/secrets/shared/ec2-keypair-shared.pem
   base_snapshot: shared/base-dev-r1
   home_snapshot: shared/home-dev-r1
   probes:
@@ -96,7 +95,7 @@ resources:
     
     |Launch Template|Instance Type|Disk Size|
     |---------------|-------------|---------|
-    |{{state.launch_template}}|{{state.instance_type}}|{{state.root_volume_size}}G|
+    |{{state.launch_template.value}}|{{state.instance_type.value}}|{{state.root_volume_size.value}}G|
 
     To Access:
     - [Terminal]({{endpoints.term.url}})

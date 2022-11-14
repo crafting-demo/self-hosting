@@ -1,6 +1,8 @@
 #!/bin/bash
 
-TFDIR="$(readlink -nf ${BASH_SOURCE[0]%/*})/tf"
+set -ex
 
-exec ssh -o StrictHostKeyChecking=no -i "$SSH_KEYPAIR_FILE" \
-    $(terraform -chdir="$TFDIR" output -raw user)@$(terraform -chdir="$TFDIR" output -raw private_ip) "$@"
+. "${BASH_SOURCE[0]%/*}/functions.sh"
+
+wait_for_state
+exec ssh -o StrictHostKeyChecking=no "$(state_value user)@$(state_value private_ip)" "$@"

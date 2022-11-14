@@ -8,13 +8,7 @@ hooks:
 daemons:
   webide:
     run:
-      cmd: |
-        ./wait.sh
-        set -x
-        socat \
-          TCP-LISTEN:8081,fork,reuseaddr \
-          TCP-CONNECT:$(terraform -chdir=tf output -raw private_ip):$(terraform -chdir=tf output -raw vscode_server_port)
-      dir: apps/aws-linuxvm
+      cmd: apps/aws-linuxvm/ideproxy.sh 8081
 
   ttyd:
     run:

@@ -31,7 +31,7 @@ There are at least 2 clients who will access the VM after creating the sandbox:
   SSH to establish the terminal to the VM.
   The public key is automatically authorized during the VM setup.
 - The user using a local machine (outside the sandbox, e.g. a laptop).
-  This solution in this example can be replaced by an actual practice in use.
+  The approach in this example can be replaced by an actual practice in use.
   Only for demonstration, this example automatically authorizes key pairs
   matching the tag:
 
@@ -62,7 +62,7 @@ The subnets and security groups must be specified either in the launch template 
 in the Terraform configuration (see `main.tf`), but not in both places (due to 
 the limitation of the current aws provider).
 
-## Unknown Issues
+## Known Issues
 
 The VSCode server package has native library dependencies. The current
 build doesn't work on Amazon Linux because the libc used there is too

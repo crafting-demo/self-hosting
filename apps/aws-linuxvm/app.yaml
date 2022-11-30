@@ -13,7 +13,7 @@ overview: |
 
 env:
 - EC2_INSTANCE_TYPE=t2.micro
-- EC2_DISK_GB=10
+- EC2_DISK_GB=100
 customizations:
 - env:
     name: EC2_INSTANCE_TYPE
@@ -103,26 +103,12 @@ resources:
     - [VSCode](vscode://vscode-remote/ssh-remote%2B{{state.private_ip.value}}{{state.home_dir.value}})/src
     - SSH: `ssh {{state.user.value}}@{{state.private_ip.value}}`
     - PrivateIP: {{state.private_ip.value}}
-
-  handlers:
-    on_create:
-      max_retries: 3
-      timeout: 1800s
-      save_state: true
-      use_workspace:
-        name: tf
-        run:
-          dir: demo/apps/aws-linuxvm/tf
-          cmd: |
-            set -ex
-            terraform init >&2
-            terraform apply -auto-approve -var instance_type=$EC2_INSTANCE_TYPE -var root_volume_size=$EC2_DISK_GB >&2
-            terraform output -json
-    on_delete:
-      max_retries: 3
-      timeout: 1800s
-      use_workspace:
-        name: tf
-        run:
-          dir: demo/apps/aws-linuxvm/tf
-          cmd: terraform destroy -auto-approve >&2
+  terraform:
+    workspace: tf
+    dir: demo/apps/aws-linuxvm/tf
+    run:
+      timeout: 600s
+      vars:
+        instance_type: '$EC2_INSTANCE_TYPE'
+        root_volume_size: '$EC2_DISK_GB'
+    save_state: true

@@ -64,26 +64,18 @@ resources:
     ```
 
     Password can be found in `/run/sandbox/fs/resources/windows/output`.
-
-  handlers:
-    on_create:
-      max_retries: 3
+  terraform:
+    workspace: dev
+    dir: demo/apps/aws-windowsvm/tf
+    run:
       timeout: 1800s
-      save_state: true
-      use_workspace:
-        name: dev
-        run:
-          dir: demo/apps/aws-windowsvm/tf
-          cmd: |
-            set -ex
-            terraform init >&2
-            terraform apply -auto-approve >&2
-            terraform output -json
-    on_delete:
-      max_retries: 3
-      timeout: 1800s
-      use_workspace:
-        name: dev
-        run:
-          dir: demo/apps/aws-windowsvm/tf
-          cmd: terraform destroy -auto-approve >&2
+    save_state: true
+customizations:
+- property_set:
+    type: crafting.dev/sandbox/express-workspace
+    properties:
+      os: windows
+      summary: '{{state.public_dns.value}}'
+      ip: '{{state.public_ip.value}}'
+      host: '{{state.public_dns.value}}'
+      webrdp_url: '{{endpoints.rdp.url}}'

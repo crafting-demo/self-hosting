@@ -112,3 +112,13 @@ resources:
         instance_type: '$EC2_INSTANCE_TYPE'
         root_volume_size: '$EC2_DISK_GB'
     save_state: true
+customizations:
+- property_set:
+    type: crafting.dev/sandbox/express-workspace
+    properties:
+      os: linux
+      summary: '{{state.private_ip.value}}'
+      ip: '{{state.private_ip.value}}'
+      webterm_url: '{{endpoints.term.url}}'
+      webide_url: 'http://{{state.private_ip.value}}:{{state.vscode_server_port.value}}/?folder={{state.home_dir.value}}/src'
+      ssh_command: 'ssh {{state.user.value}}@{{state.private_ip.value}}'

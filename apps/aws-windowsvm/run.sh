@@ -7,7 +7,7 @@ function run_mysql() {
 }
 
 function resource_output() {
-    jq -cMr ".$1.value" </run/sandbox/fs/resources/windows/output 2>/dev/null || true
+    jq -cMr ".$1.value" </run/sandbox/fs/resources/windows/state 2>/dev/null || true
 }
 
 function wait_for_resource() {

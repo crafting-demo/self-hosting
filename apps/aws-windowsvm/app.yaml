@@ -63,7 +63,7 @@ resources:
     username:s:Administrator
     ```
 
-    Password can be found in `/run/sandbox/fs/resources/windows/output`.
+    Password can be found in `/run/sandbox/fs/resources/windows/state`.
   terraform:
     workspace: dev
     dir: demo/apps/aws-windowsvm/tf
@@ -75,7 +75,7 @@ customizations:
     type: crafting.dev/sandbox/express-workspace
     properties:
       os: windows
-      summary: '{{state.public_dns.value}}'
-      ip: '{{state.public_ip.value}}'
-      host: '{{state.public_dns.value}}'
+      summary: 'Windows on an EC2 instance'
+      ip: '{{resoures.windows.state.public_ip.value}}'
+      host: '{{resources.windows.state.public_dns.value}}'
       webrdp_url: '{{endpoints.rdp.url}}'

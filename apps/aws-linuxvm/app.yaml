@@ -100,7 +100,7 @@ resources:
     To Access:
     - [Terminal]({{endpoints.term.url}})
     - [WebIDE](http://{{state.private_ip.value}}:{{state.vscode_server_port.value}}/?folder={{state.home_dir.value}}/src)
-    - [VSCode](vscode://vscode-remote/ssh-remote%2B{{state.private_ip.value}}{{state.home_dir.value}})/src
+    - [VSCode](vscode://vscode-remote/ssh-remote%2B{{state.private_ip.value}}{{state.home_dir.value}}/src)
     - SSH: `ssh {{state.user.value}}@{{state.private_ip.value}}`
     - PrivateIP: {{state.private_ip.value}}
   terraform:
@@ -117,8 +117,9 @@ customizations:
     type: crafting.dev/sandbox/express-workspace
     properties:
       os: linux
-      summary: '{{state.private_ip.value}}'
-      ip: '{{state.private_ip.value}}'
+      summary: 'Linux on an EC2 instance'
+      ip: '{{resources.linux.state.private_ip.value}}'
       webterm_url: '{{endpoints.term.url}}'
-      webide_url: 'http://{{state.private_ip.value}}:{{state.vscode_server_port.value}}/?folder={{state.home_dir.value}}/src'
-      ssh_command: 'ssh {{state.user.value}}@{{state.private_ip.value}}'
+      webide_url: 'http://{{resources.linux.state.private_ip.value}}:{{resources.linux.state.vscode_server_port.value}}/?folder={{resources.linux.state.home_dir.value}}/src'
+      vscode_url: 'vscode://vscode-remote/ssh-remote%2B{{resources.linux.state.private_ip.value}}{{resources.linux.state.home_dir.value}}/src'
+      ssh_command: 'ssh {{resources.linux.state.user.value}}@{{resources.linux.state.private_ip.value}}'

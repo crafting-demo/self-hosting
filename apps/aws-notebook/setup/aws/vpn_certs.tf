@@ -6,7 +6,7 @@ resource "tls_self_signed_cert" "ca" {
   private_key_pem = tls_private_key.ca.private_key_pem
 
   subject {
-    common_name = "sandbox-notebook-${var.ecs_cluster_name}.vpn.cn"
+    common_name = "${var.deploy_name}.vpn.ca"
   }
 
   validity_period_hours = 87600
@@ -30,7 +30,7 @@ resource "tls_private_key" "client" {
 resource "tls_cert_request" "client" {
   private_key_pem = tls_private_key.client.private_key_pem
   subject {
-    common_name = "sandbox-notebook-${var.ecs_cluster_name}.vpn.client"
+    common_name = "${var.deploy_name}.vpn.client"
   }
 }
 
@@ -61,7 +61,7 @@ resource "tls_cert_request" "server" {
   private_key_pem = tls_private_key.server.private_key_pem
 
   subject {
-    common_name = "sandbox-notebook-${var.ecs_cluster_name}.vpn.server"
+    common_name = "${var.deploy_name}.vpn.server"
   }
 }
 

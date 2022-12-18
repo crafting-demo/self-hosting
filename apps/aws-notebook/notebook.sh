@@ -1,8 +1,8 @@
 #!/bin/bash
 
-ECS_INSTANCE_STATE="/run/sandbox/fs/resources/aws-ecs-service/state"
+ECS_INSTANCE_STATE="/run/sandbox/fs/resources/ecs/state"
 JUPYTER_KERNEL_DIR="/usr/local/share/jupyter/kernels/ECS IPython Kernel"
-JUPYTER_KERNEL_FILE=$JUPYTER_KERNEL_DIR"/kernel.json"
+JUPYTER_KERNEL_FILE="$JUPYTER_KERNEL_DIR/kernel.json"
 SSH_PORT=22
 
 function fatal() {
@@ -28,7 +28,7 @@ function wait_for_ecs_ip() {
 SSH_HOST="$(wait_for_ecs_ip)"
 [[ -n "$SSH_HOST" ]] || fatal "Wait for ECS IP timed out."
 
-nc -vz -w 5 $SSH_HOST $SSH_PORT || fatal "Can't connect ${SSH_HOST}"
+nc -vz -w 5 "$SSH_HOST" $SSH_PORT || fatal "Can't connect ${SSH_HOST}"
 
 sudo mkdir -p "$JUPYTER_KERNEL_DIR"
 

@@ -1,43 +1,34 @@
 variable "ecs_cluster_name" {
+  description = "The name of ECS cluster."
   type        = string
-  description = "The name of ECS cluster"
-  nullable    = false
+}
+
+variable "ecs_task_exec_role_arn" {
+  description = "The Role ARN for executing ECS tasks."
+  type        = string
+}
+
+variable "ecs_task_image" {
+  description = "The container image used for ECS tasks."
+  type        = string
+}
+
+variable "subnet_ids" {
+  description = "Subnet ids for running ECS tasks."
+  type        = list(string)
   validation {
-    condition     = length(var.ecs_cluster_name) > 0
-    error_message = "The ecs_cluster_name value must greater than 0."
+    condition     = length(var.subnet_ids) > 0
+    error_message = "At least one subnet ID must be provided."
   }
 }
 
-variable "subnet_id" {
-  type        = string
-  description = "subnet id for ECS service"
-  nullable    = false
-  validation {
-    condition     = length(var.subnet_id) > 0
-    error_message = "The subnet_id value must greater than 0."
-  }
-}
-
-variable "security_groups" {
-  type     = string
-  nullable = true
+variable "security_group_ids" {
+  description = "The additional security groups to attach to the ECS tasks."
+  type        = list(string)
+  default     = []
 }
 
 variable "service_launch_type" {
   type    = string
   default = "FARGATE"
-}
-
-variable "ssh_public_key" {
-  type    = string
-  default = ""
-}
-
-variable "task_image" {
-  type     = string
-  nullable = false
-  validation {
-    condition     = length(var.task_image) > 0
-    error_message = "The task_image value must greater than 0."
-  }
 }

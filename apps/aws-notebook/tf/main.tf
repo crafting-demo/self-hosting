@@ -7,7 +7,6 @@ terraform {
   }
 }
 
-
 provider "aws" {
   default_tags {
     tags = {
@@ -32,11 +31,6 @@ data "external" "task" {
   }
 }
 
-data "aws_iam_role" "ecs_task_execution_role" {
-  name = "ecsTaskExecutionRole"
-}
-
-# Create a task definition 
 resource "aws_ecs_task_definition" "notebook" {
   family                   = "notebook_${data.external.env.result.sandbox_id}"
   requires_compatibilities = ["FARGATE", "EC2"]
@@ -47,17 +41,17 @@ resource "aws_ecs_task_definition" "notebook" {
     operating_system_family = "LINUX"
     cpu_architecture        = "X86_64"
   }
-  task_role_arn      = data.aws_iam_role.ecs_task_execution_role.arn
-  execution_role_arn = data.aws_iam_role.ecs_task_execution_role.arn
+  task_role_arn      = var.ecs_task_exec_role_arn
+  execution_role_arn = var.ecs_task_exec_role_arn
   container_definitions = jsonencode([
     {
       name      = "notebook"
-      image     = var.task_image
+      image     = var.ecs_task_image
       essential = true
       environment = [
         {
           name  = "PUBLIC_KEY"
-          value = var.ssh_public_key
+          value = data.external.env.result.ssh_public_key
         }
       ]
       portMappings = [
@@ -70,7 +64,6 @@ resource "aws_ecs_task_definition" "notebook" {
   ])
 }
 
-# Create a service
 resource "aws_ecs_service" "notebook" {
   launch_type         = var.service_launch_type
   task_definition     = aws_ecs_task_definition.notebook.arn
@@ -79,8 +72,8 @@ resource "aws_ecs_service" "notebook" {
   scheduling_strategy = "REPLICA"
   desired_count       = 1
   network_configuration {
-    subnets          = [var.subnet_id]
+    subnets          = var.subnet_ids
     assign_public_ip = false
-    security_groups  = split(",", var.security_groups)
+    security_groups  = var.security_group_ids
   }
 }

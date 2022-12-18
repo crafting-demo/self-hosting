@@ -1,6 +1,6 @@
 ---
 overview: |
-  # Jupter Notebook
+  # Jupyter Notebook with cells running in AWS Elastic Container Service.
 endpoints:
   - name: notebook
     http:
@@ -18,49 +18,39 @@ workspaces:
     checkouts:
       - path: solutions
         repo:
-          git: https://github.com/crafting-demo/solutions.git
+          git: https://github.com/crafting-demo/solutions
         manifest:
           overlays:
-            - file: apps/aws-notebook/manifest.yaml
-    env:
-      - AWS_CONFIG_FILE=/run/sandbox/fs/secrets/shared/aws-config
-      - OPENVPN_CONFIG_FILE=/run/sandbox/fs/secrets/shared/openvpn-config
-      - ECS_CLUSTER_NAME=
-      - SUBNET_ID=
-      - SERVICE_LAUNCH_TYPE=FARGATE
-      - TASK_IMAGE=
-      - SECURITY_GROUPS=
-    base_snapshot: base-notebook-v1
+          - content: |
+              daemons:
+                openvpn:
+                  run:
+                    cmd: sudo openvpn --config "$OPENVPN_CONFIG_FILE"
+                notebook:
+                  run:
+                    cmd: ./apps/aws-notebook/notebook.sh
+    base_snapshot: oci://us-docker.pkg.dev/crafting-playground/demo/notebook/workspace:latest
     probes:
       readiness:
         - name: http
           http_get:
             port: 8888
             path: /
+    env:
+    - AWS_CONFIG_FILE=/run/sandbox/fs/secrets/shared/aws-config
+    - OPENVPN_CONFIG_FILE=/run/sandbox/fs/secrets/shared/openvpn-config
 resources:
-  - name: aws-ecs-service
-    brief: AWS ECS Service
-    handlers:
-      on_create:
-        save_state: true
-        max_retries: 3
-        timeout: 1800s
-        use_workspace:
-          name: notebook
-          run:
-            dir: solutions/apps/aws-notebook/tf
-            cmd: ./on_create.sh
-      on_delete:
-        max_retries: 3
-        timeout: 1800s
-        use_workspace:
-          name: notebook
-          run:
-            dir: solutions/apps/aws-notebook/tf
-            cmd: >
-              terraform apply -destroy -auto-approve
-              -var="ecs_cluster_name=${ECS_CLUSTER_NAME}"  
-              -var="subnet_id=${SUBNET_ID}" 
-              -var="security_groups=${SECURITY_GROUPS}" 
-              -var="service_launch_type=${SERVICE_LAUNCH_TYPE}"  
-              -var="task_image=${TASK_IMAGE}"
+  - name: ecs
+    brief: AWS ECS Service for Notebook Execution
+    terraform:
+      workspace: notebook
+      dir: solutions/apps/aws-notebook/tf
+      run:
+        vars:
+          # Please customize the following configurations.
+          ecs_cluster_name: ECS_CLUSTER_NAME
+          ecs_task_exec_role_arn: arn:aws:iam::ACCOUNT_ID:role/ROLE_NAME
+          ecs_task_image: us-docker.pkg.dev/crafting-playground/demo/notebook/task:latest
+          subnet_ids: '["subnet1_id", "subnet2_id"]'
+          security_group_ids: '["sg1_id", "sg2_id"]'
+      save_state: true

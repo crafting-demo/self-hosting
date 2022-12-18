@@ -8,8 +8,8 @@ eval "$(jq -r '@sh "ECS_CLUSTER_NAME=\(.ecs_cluster_name) ECS_SERVICE_NAME=\(.ec
 
 function get_task_ip(){
   local task_arn
-  task_arn="$(aws ecs list-tasks --region ${AWS_REGION} --cluster ${ECS_CLUSTER_NAME} --service=${ECS_SERVICE_NAME} | jq .taskArns[0] | tr -d '\"')"
-  echo "$(aws ecs describe-tasks --tasks ${task_arn} --region ${AWS_REGION} --cluster ${ECS_CLUSTER_NAME} | jq '.tasks[0].attachments[0].details[] | select(.name==\"privateIPv4Address\") | .value' |  tr -d '\"')"
+  task_arn="$(aws ecs list-tasks --region ${AWS_REGION} --cluster ${ECS_CLUSTER_NAME} --service=${ECS_SERVICE_NAME} | jq -cMr .taskArns[0])"
+  echo "$(aws ecs describe-tasks --tasks ${task_arn} --region ${AWS_REGION} --cluster ${ECS_CLUSTER_NAME} | jq -cMr '.tasks[0].attachments[0].details[] | select(.name==\"privateIPv4Address\") | .value')"
 }
 
 function get_stable_task_ip(){

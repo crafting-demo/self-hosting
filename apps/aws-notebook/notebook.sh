@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ECS_INSTANCE_STATE="/run/sandbox/fs/resources/ecs/state"
+STATE_FILE="/run/sandbox/fs/resources/ecs/state"
 JUPYTER_KERNEL_DIR="/usr/local/share/jupyter/kernels/ECS IPython Kernel"
 JUPYTER_KERNEL_FILE="$JUPYTER_KERNEL_DIR/kernel.json"
 SSH_PORT=22
@@ -11,8 +11,15 @@ function fatal() {
 }
 
 function ecs_ip() {
-    local ip_addr="$(jq -cMr .task_private_ip.value $ECS_INSTANCE_STATE 2>/dev/null || true)"
-    [[ "$ip_addr" == "null" ]] || echo "$ip_addr"
+  local cluster_name service_name task_arn addr
+  cluster_name="$(jq -cMr .ecs_cluster_name.value <$STATE_FILE)"
+  service_name="$(jq -cMr .ecs_service_name.value <$STATE_FILE)"
+  [[ -n "$cluster_name" && "$cluster_name" != "null" && \
+     -n "$service_name" && "$service_name" != "null" ]] || return
+  task_arn="$(aws ecs list-tasks --cluster $cluster_name --service=$service_name | jq -cMr .taskArns[0])"
+  [[ -n "$task_arn" && "$task_arn" != "null" ]] || return
+  addr="$(aws ecs describe-tasks --tasks $task_arn --cluster $cluster_name | jq -cMr '.tasks[0].attachments[0].details[]|select(.name=="privateIPv4Address")|.value')"
+  [[ -z "$addr" || "$addr" == "null" ]] || echo "$addr"
 }
 
 function wait_for_ecs_ip() {

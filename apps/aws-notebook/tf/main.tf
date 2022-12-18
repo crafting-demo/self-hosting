@@ -23,14 +23,6 @@ data "external" "env" {
   program = ["${path.module}/env.sh"]
 }
 
-data "external" "task" {
-  program = ["${path.module}/get-task-ip.sh"]
-  query = {
-    ecs_cluster_name = data.aws_ecs_cluster.cluster.cluster_name
-    ecs_service_name = resource.aws_ecs_service.notebook.name
-  }
-}
-
 resource "aws_ecs_task_definition" "notebook" {
   family                   = "notebook_${data.external.env.result.sandbox_id}"
   requires_compatibilities = ["FARGATE", "EC2"]

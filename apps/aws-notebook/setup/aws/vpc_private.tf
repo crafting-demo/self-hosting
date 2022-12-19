@@ -31,7 +31,7 @@ resource "aws_vpc_endpoint" "ecr_api" {
 
 resource "aws_vpc_endpoint" "logs" {
   count = var.internet_access ? 0 : 1
-    
+
   vpc_id              = aws_vpc.sample.id
   service_name        = "com.amazonaws.${data.aws_region.current.name}.logs"
   vpc_endpoint_type   = "Interface"

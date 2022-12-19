@@ -1,6 +1,6 @@
 variable "deploy_name" {
   description = "The unique name to be associated with resources' Name tag. Also used for ECS cluster name."
-  type        = string  
+  type        = string
 }
 
 variable "vpc_cidr" {

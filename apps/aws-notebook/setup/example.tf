@@ -1,8 +1,8 @@
 module "aws" {
-  source        = "./aws"
-  deploy_name   = "NotebookSample"
-  vpc_cidr      = "10.210.0.0/16"
-  vpn_cidr      = "10.211.0.0/16"
+  source      = "./aws"
+  deploy_name = "NotebookSample"
+  vpc_cidr    = "10.210.0.0/16"
+  vpn_cidr    = "10.211.0.0/16"
 }
 
 output "ecs" {

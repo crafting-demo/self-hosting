@@ -38,6 +38,7 @@ workspaces:
             path: /
         - name: remote
           command: '/home/owner/solutions/apps/aws-notebook/ecs_target.sh'
+          interval: 1s
     env:
     - AWS_CONFIG_FILE=/run/sandbox/fs/secrets/shared/aws-config
     - OPENVPN_CONFIG_FILE=/run/sandbox/fs/secrets/shared/openvpn-config

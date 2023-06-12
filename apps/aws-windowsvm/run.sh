@@ -52,6 +52,6 @@ exec docker run -a STDOUT -a STDERR --name guacamole --rm \
     -e MYSQL_PASSWORD=guacamole \
     -e MYSQL_AUTO_CREATE_ACCOUNTS=true \
     -e HEADER_ENABLED=true \
-    -e HTTP_AUTH_HEADER=X-CloudSandbox-User-Email \
+    -e HTTP_AUTH_HEADER=X-Crafting-User \
     -p 8080:8080 \
     guacamole/guacamole:1.4.0

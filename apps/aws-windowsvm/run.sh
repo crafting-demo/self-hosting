@@ -54,4 +54,4 @@ exec docker run -a STDOUT -a STDERR --name guacamole --rm \
     -e HEADER_ENABLED=true \
     -e HTTP_AUTH_HEADER=X-CloudSandbox-User-Email \
     -p 8080:8080 \
-    guacamole/guacamole
+    guacamole/guacamole:1.4.0

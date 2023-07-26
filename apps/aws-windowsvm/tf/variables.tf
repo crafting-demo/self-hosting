@@ -1,5 +1,5 @@
 variable "launch_template_name" {
-  default = "large-windows-vs-community"
+  default = "large-windows-vs"
 }
 
 variable "keypair_file" {

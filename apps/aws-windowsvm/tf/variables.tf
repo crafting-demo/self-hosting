@@ -1,5 +1,5 @@
 variable "launch_template_name" {
-  default = "micro-windows"
+  default = "large-windows-vs-community"
 }
 
 variable "keypair_file" {
